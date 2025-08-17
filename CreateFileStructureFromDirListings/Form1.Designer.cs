@@ -38,11 +38,16 @@
             this.radioButton_fileSizeBeforeName = new System.Windows.Forms.RadioButton();
             this.radioButton_fileSizeAfterName = new System.Windows.Forms.RadioButton();
             this.groupBox_fileSize = new System.Windows.Forms.GroupBox();
-            this.comboBox_sizeUnit = new System.Windows.Forms.ComboBox();
             this.label_sizeUnit = new System.Windows.Forms.Label();
+            this.comboBox_sizeUnit = new System.Windows.Forms.ComboBox();
             this.comboBox_invalidCharReplacement = new System.Windows.Forms.ComboBox();
             this.label_invalidCharReplacement = new System.Windows.Forms.Label();
             this.button_about = new System.Windows.Forms.Button();
+            this.label_loading = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.label_progressPercent = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.comboBox_inputSizeUnit = new System.Windows.Forms.ComboBox();
             this.groupBox_fileSize.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -155,6 +160,16 @@
             this.groupBox_fileSize.TabIndex = 6;
             this.groupBox_fileSize.TabStop = false;
             // 
+            // label_sizeUnit
+            // 
+            this.label_sizeUnit.AutoSize = true;
+            this.label_sizeUnit.Enabled = false;
+            this.label_sizeUnit.Location = new System.Drawing.Point(6, 84);
+            this.label_sizeUnit.Name = "label_sizeUnit";
+            this.label_sizeUnit.Size = new System.Drawing.Size(50, 13);
+            this.label_sizeUnit.TabIndex = 9;
+            this.label_sizeUnit.Text = "Size unit:";
+            // 
             // comboBox_sizeUnit
             // 
             this.comboBox_sizeUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -169,16 +184,6 @@
             this.comboBox_sizeUnit.Size = new System.Drawing.Size(98, 21);
             this.comboBox_sizeUnit.TabIndex = 8;
             this.comboBox_sizeUnit.SelectedIndexChanged += new System.EventHandler(this.comboBox_sizeUnit_SelectedIndexChanged);
-            // 
-            // label_sizeUnit
-            // 
-            this.label_sizeUnit.AutoSize = true;
-            this.label_sizeUnit.Enabled = false;
-            this.label_sizeUnit.Location = new System.Drawing.Point(6, 84);
-            this.label_sizeUnit.Name = "label_sizeUnit";
-            this.label_sizeUnit.Size = new System.Drawing.Size(50, 13);
-            this.label_sizeUnit.TabIndex = 9;
-            this.label_sizeUnit.Text = "Size unit:";
             // 
             // comboBox_invalidCharReplacement
             // 
@@ -215,14 +220,70 @@
             this.button_about.UseVisualStyleBackColor = true;
             this.button_about.Click += new System.EventHandler(this.button_about_Click);
             // 
+            // label_loading
+            // 
+            this.label_loading.AutoSize = true;
+            this.label_loading.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_loading.Location = new System.Drawing.Point(255, 204);
+            this.label_loading.Name = "label_loading";
+            this.label_loading.Size = new System.Drawing.Size(246, 15);
+            this.label_loading.TabIndex = 11;
+            this.label_loading.Text = "Creating file structure... please wait...";
+            this.label_loading.Visible = false;
+            // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(258, 226);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(211, 23);
+            this.progressBar.TabIndex = 12;
+            this.progressBar.Visible = false;
+            // 
+            // label_progressPercent
+            // 
+            this.label_progressPercent.AutoSize = true;
+            this.label_progressPercent.Location = new System.Drawing.Point(475, 231);
+            this.label_progressPercent.Name = "label_progressPercent";
+            this.label_progressPercent.Size = new System.Drawing.Size(21, 13);
+            this.label_progressPercent.TabIndex = 13;
+            this.label_progressPercent.Text = "0%";
+            this.label_progressPercent.Visible = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(513, 115);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(141, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Input dir listing size unti type:";
+            // 
+            // comboBox_inputSizeUnit
+            // 
+            this.comboBox_inputSizeUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_inputSizeUnit.FormattingEnabled = true;
+            this.comboBox_inputSizeUnit.Items.AddRange(new object[] {
+            "Decimal (1 KB = 1000 B)",
+            "Binary (1 KB = 1024 B)"});
+            this.comboBox_inputSizeUnit.Location = new System.Drawing.Point(516, 134);
+            this.comboBox_inputSizeUnit.Name = "comboBox_inputSizeUnit";
+            this.comboBox_inputSizeUnit.Size = new System.Drawing.Size(156, 21);
+            this.comboBox_inputSizeUnit.TabIndex = 8;
+            this.comboBox_inputSizeUnit.SelectedIndexChanged += new System.EventHandler(this.comboBox_inputSizeUnit_SelectedIndexChanged);
+            // 
             // Form1
             // 
             this.AcceptButton = this.button_Create;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(684, 261);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label_progressPercent);
+            this.Controls.Add(this.progressBar);
+            this.Controls.Add(this.label_loading);
             this.Controls.Add(this.button_about);
             this.Controls.Add(this.label_invalidCharReplacement);
+            this.Controls.Add(this.comboBox_inputSizeUnit);
             this.Controls.Add(this.comboBox_invalidCharReplacement);
             this.Controls.Add(this.groupBox_fileSize);
             this.Controls.Add(this.checkBox_includeFiles);
@@ -261,6 +322,11 @@
         private System.Windows.Forms.ComboBox comboBox_invalidCharReplacement;
         private System.Windows.Forms.Label label_invalidCharReplacement;
         private System.Windows.Forms.Button button_about;
+        private System.Windows.Forms.Label label_loading;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Label label_progressPercent;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBox_inputSizeUnit;
     }
 }
 

@@ -12,14 +12,16 @@ namespace CreateFileStructureFromDirListings
         private int addFolderSizeToName = 0; // 0 = no, 1 = start, 2 = end
         private char invalidCharReplacement = '#';
         private string sizeUnit = "bytes";
+        private int inputBytesInKB = 1000;
 
-        public void CreateFileStructure(string[] dirListings, string outputDir, bool includeFiles)
+        public void CreateFileStructure(string[] dirListings, string outputDir, bool includeFiles, IProgress<int> progress)
         {
             string[] folderAttributes = SplitString(dirListings[13].Substring(8), " <TAB> ");
             string[] fileAttributes = SplitString(dirListings[9].Substring(8), " <TAB> ");
 
             string currentFolderPath = "";
 
+            int currentLine = 0;
             foreach (string line in dirListings)
             {
                 if (line.StartsWith("FOLDER"))
@@ -41,7 +43,7 @@ namespace CreateFileStructureFromDirListings
                             case "Folder Size":
                                 if (addFolderSizeToName != 0)
                                 {
-                                    folderSizeBytes = long.Parse(currentFolderProperties[i].Replace(",", ""));
+                                    folderSizeBytes = ParseSize(currentFolderProperties[i], inputBytesInKB);
                                 }
                                 break;
                             case "Date Last Modified":
@@ -97,8 +99,8 @@ namespace CreateFileStructureFromDirListings
                                 break;
                             case "File Size":
                                 if (addFileSizeToName != 0)
-                                {
-                                    fileSizeBytes = long.Parse(currentFileProperties[i].Replace(",", ""));
+                                { 
+                                    fileSizeBytes = ParseSize(currentFileProperties[i], inputBytesInKB);
                                 }
                                 break;
                         }
@@ -136,6 +138,9 @@ namespace CreateFileStructureFromDirListings
                     }
                     catch (System.IO.PathTooLongException) { }
                 }
+
+                currentLine++;
+                progress.Report(currentLine);
             }
 
         }
@@ -198,6 +203,27 @@ namespace CreateFileStructureFromDirListings
             }
         }
 
+        private long ParseSize(string sizeText, int inputBytesInKB)
+        {
+            // String of number of bytes with no unit
+            if (long.TryParse(sizeText.Replace(",", ""), out long sizeInBytes))
+            {
+                return sizeInBytes;
+            }
+
+            string[] units = { "bytes", "KB", "MB", "GB", "TB", "PB" };
+
+            for (int i = 0; i < units.Length; i++)
+            {
+                if (sizeText.EndsWith(units[i]))
+                {
+                    return (long) (double.Parse(sizeText.Substring(0, sizeText.Length - (units[i].Length + 1))) * Math.Pow(inputBytesInKB, i));
+                }
+            }
+
+            return 0;
+        }
+
         public int AddFileSizeToName
         {
             set
@@ -227,6 +253,14 @@ namespace CreateFileStructureFromDirListings
             set
             {
                 sizeUnit = value;
+            }
+        }
+
+        public int InputBytesInKB
+        {
+            set
+            {
+                inputBytesInKB = value;
             }
         }
 

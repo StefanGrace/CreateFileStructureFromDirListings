@@ -29,6 +29,7 @@ namespace CreateFileStructureFromDirListings
             }
             comboBox_sizeUnit.SelectedIndex = 0;
             comboBox_invalidCharReplacement.SelectedIndex = 0;
+            comboBox_inputSizeUnit.SelectedIndex = 0;
         }
 
         private void button_Create_Click(object sender, EventArgs e)
@@ -56,8 +57,30 @@ namespace CreateFileStructureFromDirListings
                 System.IO.Directory.CreateDirectory(textBox_fsPath.Text);
             }*/
 
+            BuildFileStruce();
+        }
+
+        private async void BuildFileStruce()
+        {
             string[] dirListingLines = System.IO.File.ReadAllLines(textBox_dirListingPath.Text.Replace("\"", ""), Encoding.Default);
-            fsCreator.CreateFileStructure(dirListingLines, textBox_fsPath.Text, checkBox_includeFiles.Checked);
+            progressBar.Maximum = dirListingLines.Length;
+            IProgress<int> progress = new Progress<int>(count =>
+            {
+                progressBar.Value = count;
+                label_progressPercent.Text = (((double)progressBar.Value / progressBar.Maximum) * 100).ToString("N0") + "%";
+            });
+            label_loading.Visible = true;
+            progressBar.Visible = true;
+            label_progressPercent.Visible = true;
+            button_Create.Enabled = false;
+            await Task.Run(() =>
+            {
+                fsCreator.CreateFileStructure(dirListingLines, textBox_fsPath.Text, checkBox_includeFiles.Checked, progress);
+            });
+            label_loading.Visible = false;
+            progressBar.Visible = false;
+            label_progressPercent.Visible = false;
+            button_Create.Enabled = true;
         }
 
         private void checkBox_addFileSizeToName_CheckedChanged(object sender, EventArgs e)
@@ -133,6 +156,13 @@ namespace CreateFileStructureFromDirListings
         {
             MessageBox.Show("This program takes the TXT file that Karen's Directory Printer outputs, and creates the original file structure, either with just the folders, or with the folder and empty versions of the files. It will also set the correct date modified and date created for the folders and files if they are present in the dir listing TXT. It can also add the file size to the start or end of the file names. ", "About");
         }
+
+        private void comboBox_inputSizeUnit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int[] sizeUnits = { 1000, 1024 };
+            fsCreator.InputBytesInKB = sizeUnits[comboBox_inputSizeUnit.SelectedIndex];
+        }
+
 
         /*
         private void SetFolderSizeInName()
